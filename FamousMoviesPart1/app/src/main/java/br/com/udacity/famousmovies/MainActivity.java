@@ -2,6 +2,8 @@ package br.com.udacity.famousmovies;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +20,7 @@ import java.util.List;
 import br.com.udacity.famousmovies.adapters.MovieModelAdapter;
 import br.com.udacity.famousmovies.interfaces.AsyncTaskDelegate;
 import br.com.udacity.famousmovies.models.MovieModel;
+import br.com.udacity.famousmovies.services.MovieLoaderService;
 import br.com.udacity.famousmovies.services.MovieService;
 import br.com.udacity.famousmovies.utilities.NetworkUtils;
 
@@ -26,8 +29,11 @@ public class MainActivity extends AppCompatActivity implements MovieModelAdapter
     private RecyclerView mMovieItemsRecycleView;
     private ProgressBar mLoadMoviesProgressBar;
 
+    private final static int MOVIE_LOADER_ID = 78;
+    private final String URL_TO_MOVIES = "popularMovies";
+
     // TODO: Informar a chave de autenticação com a API MovieDB.
-    private final String API_KEY = "";
+    private final String API_KEY = "ba4fcf2bf797969f4e675d1acc23c969";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,11 +49,28 @@ public class MainActivity extends AppCompatActivity implements MovieModelAdapter
         this.getPopularMovies();
     }
 
+    private void loadMovies(String url) {
+        Bundle bundle = new Bundle();
+        bundle.putString(this.URL_TO_MOVIES, url);
+
+        LoaderManager loaderManager = this.getSupportLoaderManager();
+        Loader<List<MovieModel>> movieLoader = loaderManager.getLoader(MOVIE_LOADER_ID);
+
+        MovieLoaderService loader = new MovieLoaderService(this, this, this.URL_TO_MOVIES);
+
+        if (movieLoader == null) {
+            loaderManager.initLoader(MOVIE_LOADER_ID, bundle, loader);
+        } else {
+            loaderManager.restartLoader(MOVIE_LOADER_ID, bundle, loader);
+        }
+    }
+
     private void getPopularMovies() {
         this.mLoadMoviesProgressBar.setVisibility(View.VISIBLE);
         if (NetworkUtils.isNetworkConnected(this)) {
             URL apiUrl = NetworkUtils.buildUrl(NetworkUtils.DestinationPathUri.POPULAR, this.API_KEY);
-            new MovieService(this).execute(apiUrl);
+//            new MovieService(this).execute(apiUrl);
+            loadMovies(apiUrl.toString());
         } else {
             Toast toast = Toast.makeText(this, R.string.message_no_internet_connection, Toast.LENGTH_LONG);
             toast.show();
@@ -58,7 +81,8 @@ public class MainActivity extends AppCompatActivity implements MovieModelAdapter
         this.mLoadMoviesProgressBar.setVisibility(View.VISIBLE);
         if (NetworkUtils.isNetworkConnected(this)) {
             URL apiUrl = NetworkUtils.buildUrl(NetworkUtils.DestinationPathUri.TOP_RATED, this.API_KEY);
-            new MovieService(this).execute(apiUrl);
+//            new MovieService(this).execute(apiUrl);
+            this.loadMovies(apiUrl.toString());
         } else {
             Toast toast = Toast.makeText(this, R.string.message_no_internet_connection, Toast.LENGTH_LONG);
             toast.show();
