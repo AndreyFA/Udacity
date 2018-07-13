@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Filmes Famosos Part. 1</string>
+    <string name="label_movie_original_title">Título Original</string>
+    <string name="label_movie_vote_average">Nota</string>
+    <string name="label_movie_original_language">Idioma Original</string>
+    <string name="label_movie_release_date">Data de Lançamento</string>
+    <string name="label_movie_overview">Sinopse</string>
+    <string name="content_description_movie_poster">Poster do Filme</string>
+    <string name="menu_popular_movies">Mais populares</string>
+    <string name="menu_top_rated_movies">Melhores avaliados</string>
+    <string name="message_invalid_api_key">Informe uma chave válida da API.</string>
+    <string name="message_no_internet_connection">Sem conexão com a internet.</string>
+</resources>
